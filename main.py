@@ -3,7 +3,6 @@ import time
 from googlesearch import search
 
 token = '1741158845:AAGGsDYJX6Q7IbZT3O1p5ERGOmgYbStMCRU'
-
 bot = telebot.TeleBot(token)
 
 
