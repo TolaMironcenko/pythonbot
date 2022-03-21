@@ -2,8 +2,8 @@ import time
 import telebot
 from googlesearch import search
 from selenium import webdriver
-from selenium.webdriver.common.by import By
 from telebot import types
+import pyshorteners
 
 token = '5123679189:AAHTMxCyOUwPSbaeof31m8SjRHVs4qKZci8'  # testbot
 bot = telebot.TeleBot(token)
@@ -29,9 +29,11 @@ def love(message, k=0):
 def googleparse(message, searchinput):
     k = 0
     for i in search(searchinput):
-        print(str(k + 1) + " " + str(i))
+        s = pyshorteners.Shortener()
+        inlinelink = s.tinyurl.short(i)
+        print(str(k + 1) + " " + str(inlinelink))
         markup = types.InlineKeyboardMarkup()
-        btnNum = types.InlineKeyboardButton(text="перейти по ссылке", callback_data=i)
+        btnNum = types.InlineKeyboardButton(text="перейти по ссылке", callback_data=inlinelink)
         markup.add(btnNum)
         bot.send_message(message.chat.id, str(k + 1) + " " + str(i), reply_markup=markup)  # + " " + str(i))
         k += 1
@@ -44,12 +46,13 @@ def answer(call):
     opts.add_argument("--headless")
     driver = webdriver.Chrome(options=opts)
     driver.get(call.data)
-    time.sleep(1)
-    driver.find_element(by=By.TAG_NAME, value='body')
-    driver.get_screenshot_as_file("bot.png")
+    time.sleep(5)
+    driver.set_window_size(1920, 5000)
+    driver.save_screenshot("link.png")
     driver.quit()
-    time.sleep(1)
-    bot.send_photo(call.message.chat.id, open('./bot.png', 'rb'))
+    time.sleep(5)
+    bot.send_document(call.message.chat.id, open('./link.png', 'rb'))
+    time.sleep(5)
 
 
 @bot.message_handler(commands=['search', 'love'])
